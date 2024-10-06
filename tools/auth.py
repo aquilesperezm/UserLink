@@ -31,8 +31,8 @@ def get_password_hash(password):
 
 def get_user(username: str, db: Session = Depends(get_db)):
     #print('db: ',db)
-    from models.UserModel import Modulo
-    user = db.query(Modulo).filter(Modulo.username == username)
+    from models.UserModel import UserModel
+    user = db.query(UserModel).filter(UserModel.username == username)
     return user.first()
 
 def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):

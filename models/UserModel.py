@@ -6,7 +6,7 @@ import datetime
 
 
 
-class Modulo(Base):  
+class UserModel(Base):  
     __tablename__ = "userlink_user"
     id: Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     fullname: Mapped[str] = mapped_column(nullable=False)
