@@ -3,7 +3,7 @@ from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from tools.database import Base, engine
 import datetime
-
+from models.TagModel import association_table
 
 class PostModel(Base):  
     __tablename__ = "userlink_post"
@@ -22,6 +22,9 @@ class PostModel(Base):
     
     comments: Mapped[list['CommentModel']] = relationship(back_populates="post") # type: ignore
     
+    tags_posts: Mapped[list['TagModel']] = relationship( # type: ignore
+        secondary=association_table, back_populates="posts_tags"
+    )
 
 
 

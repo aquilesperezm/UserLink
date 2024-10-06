@@ -13,7 +13,7 @@ from decouple import config
 import uvicorn
 from tools.database import get_connection
 from models import UserModel,PostModel, CommentModel, TagModel
-from controllers import UserController, PostController, CommentController
+from controllers import UserController, PostController, CommentController, TagController
 
 from tools.database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
@@ -53,6 +53,7 @@ app.add_middleware(
 app.include_router(UserController.user_router)
 app.include_router(PostController.post_router)
 app.include_router(CommentController.comment_router)
+app.include_router(TagController.tag_router)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host=SERVER_HOSTNAME, port=int(SERVER_PORT), reload=True)
