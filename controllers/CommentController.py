@@ -29,7 +29,7 @@ def create(user: UserSchema, db: Session = Depends(get_db),current_user = Depend
     db.refresh(new_user)
     return new_user
 
-
+ 
 @comment_router.get("/read")
 async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     all_users = db.query(UserModel).all()

@@ -19,7 +19,7 @@ from datetime import datetime, timedelta, timezone
 from decouple import config
 
 post_router = APIRouter(prefix="/v1/post",tags=["Post"])
-
+ 
 @post_router.post("/create")
 def create(user: UserSchema, db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     new_user = UserModel(**user.model_dump())

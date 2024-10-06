@@ -12,31 +12,35 @@ from datetime import datetime, timedelta, timezone
 from decouple import config
 import uvicorn
 from tools.database import get_connection
-from models import UserModel
+from models import UserModel,PostModel, CommentModel
 from controllers import UserController, PostController, CommentController
 
 from tools.database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
- 
+  
 SERVER_HOSTNAME = config('SERVER_HOSTNAME')
 SERVER_PORT = config('SERVER_PORT')
 
 # Test connection
 con = get_connection()
+  
+RESET_FACTORY =  config('RESET_FACTORY')
+#print('env: ',RESET_FACTORY)
 
-RECREATE_DATABASE =  config('RECREATE_DATABASE')
-
-if RECREATE_DATABASE == 'True' or RECREATE_DATABASE=='true':
+if RESET_FACTORY == '1':
+    print('Log: Recreating Database')
+    print('Log: Droping all Tables -  Database')
     Base.metadata.drop_all(bind=engine)
+    print('Log: Create all Tables -  Database')
     Base.metadata.create_all(bind=engine)
-
+ 
 app = FastAPI(
     #openapi_tags=tags_metadata,
     title="UserLink - API Documentation",
     description="API endpoints",
     version="0.1",
     #docExpansion="None"
-)
+) 
 
 app.add_middleware(
     CORSMiddleware,
