@@ -14,6 +14,8 @@ import uvicorn
 from tools.database import get_connection
 from models import UserModel
 from controllers import UserController
+from tools.database import Base, engine
+from fastapi.middleware.cors import CORSMiddleware
  
 SERVER_HOSTNAME = config('SERVER_HOSTNAME')
 SERVER_PORT = config('SERVER_PORT')
@@ -21,8 +23,11 @@ SERVER_PORT = config('SERVER_PORT')
 # Test connection
 con = get_connection()
 
-#Base.metadata.drop_all(bind=engine)
-#Base.metadata.create_all(bind=engine)
+RECREATE_DATABASE =  config('RECREATE_DATABASE')
+
+if RECREATE_DATABASE == 'True' or RECREATE_DATABASE=='true':
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     #openapi_tags=tags_metadata,
@@ -30,6 +35,14 @@ app = FastAPI(
     description="API endpoints",
     version="0.1",
     #docExpansion="None"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(UserController.user_router)

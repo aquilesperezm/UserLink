@@ -17,10 +17,8 @@ from tools.database import engine, get_db
 from models.UserModel import UserModel
 from decouple import config
 
-# to get a string like this run:
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/user/login")
-# openssl rand -hex 32
 
 SECRET_KEY = config('SECRET_KEY')
 ALGORITHM = config('ALGORITHM')
@@ -38,7 +36,6 @@ def get_user(username: str, db: Session = Depends(get_db)):
 
 def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
     user = get_user(username,db)
-    #print('User: ', user)
     if not user:
         return False
     if not verify_password(password, user.password):

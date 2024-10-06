@@ -1,10 +1,9 @@
 
-import http
+
 
 from fastapi import APIRouter
 
 from fastapi import FastAPI, Depends, HTTPException, status, Response
-import models
 from sqlalchemy.orm import Session
 from models.UserModel import UserModel
 from tools.database import engine, get_db, get_connection
@@ -20,7 +19,7 @@ import tools.auth
 from datetime import datetime, timedelta, timezone
 from decouple import config
 
-user_router = APIRouter(prefix="/v1/user")
+user_router = APIRouter(prefix="/v1/user",tags=["User"])
 
 ACCESS_TOKEN_EXPIRE_MINUTES = config('ACCESS_TOKEN_EXPIRE_MINUTES')
 
@@ -50,7 +49,6 @@ async def read_users_me(current_user: Annotated[UserSchema, Depends(tools.auth.g
 
 
 @user_router.post("/register")
-#def create(user: UserSchema, db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
 def create(user: UserSchema, db: Session = Depends(get_db)):
     new_user = UserModel(**user.model_dump())
     new_user.password = tools.auth.get_password_hash(user.password)
@@ -61,14 +59,14 @@ def create(user: UserSchema, db: Session = Depends(get_db)):
 
 
 @user_router.get("/list")
-def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     all_users = db.query(UserModel).all()
     return all_users
 
 
 
 @user_router.delete("/delete/{id}")
-def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
+async def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
     delete_user = db.query(UserModel).filter(UserModel.id == id)
     if delete_user == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded")
@@ -79,7 +77,7 @@ def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP_204_N
  
 
 @user_router.put('/update/{id}')
-def update(id:int, user: UserSchema, db:Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+async def update(id:int, user: UserSchema, db:Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     update_user = db.query(UserModel).filter(UserModel.id == id)
     update_user.first()
     if update_user == None:
