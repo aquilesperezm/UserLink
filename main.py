@@ -7,12 +7,13 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import Annotated
 from psycopg2 import Error, OperationalError
 from passlib.context import CryptContext
-#import auth
+import tools.auth
 from datetime import datetime, timedelta, timezone
 from decouple import config
 import uvicorn
 from tools.database import get_connection
 from models import UserModel
+from controllers import UserController
  
 SERVER_HOSTNAME = config('SERVER_HOSTNAME')
 SERVER_PORT = config('SERVER_PORT')
@@ -30,6 +31,8 @@ app = FastAPI(
     version="0.1",
     #docExpansion="None"
 )
+
+app.include_router(UserController.user_router)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host=SERVER_HOSTNAME, port=int(SERVER_PORT), reload=True)

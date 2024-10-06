@@ -7,15 +7,19 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from schemas import Token, TokenData, UserSchema
+
+from entities.TokenSchema import TokenSchema
+from entities.TokenDataSchema import TokenDataSchema
+from entities.UserSchema import UserSchema
 from sqlalchemy.orm import Session
-from database import engine, get_db
-import models
+
+from tools.database import engine, get_db
+from models.UserModel import UserModel
 from decouple import config
 
 # to get a string like this run:
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/user/login")
 # openssl rand -hex 32
 
 SECRET_KEY = config('SECRET_KEY')
@@ -28,13 +32,13 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 def get_user(username: str, db: Session = Depends(get_db)):
-    print('db: ',db)
-    user = db.query(models.User).filter(models.User.username == username)
+    #print('db: ',db)
+    user = db.query(UserModel).filter(UserModel.username == username)
     return user.first()
 
 def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
     user = get_user(username,db)
-    print('User: ', user)
+    #print('User: ', user)
     if not user:
         return False
     if not verify_password(password, user.password):
@@ -64,7 +68,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],db: Ses
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = TokenDataSchema(username=username)
 
     except InvalidTokenError:
         raise credentials_exception

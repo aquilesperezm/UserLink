@@ -3,8 +3,7 @@ from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from tools.database import Base, engine
 
-class User(Base):
-    
+class UserModel(Base):  
     __tablename__ = "userlink_user"
     id: Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     fullname: Mapped[str] = mapped_column(nullable=False)
