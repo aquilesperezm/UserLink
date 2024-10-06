@@ -12,7 +12,7 @@ from datetime import datetime, timedelta, timezone
 from decouple import config
 import uvicorn
 from tools.database import get_connection
-from models import UserModel,PostModel, CommentModel
+from models import UserModel,PostModel, CommentModel, TagModel
 from controllers import UserController, PostController, CommentController
 
 from tools.database import Base, engine
