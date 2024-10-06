@@ -6,7 +6,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
-from pydantic import BaseModel
+#from pydantic import BaseModel
 
 from entities.TokenSchema import TokenSchema
 from entities.TokenDataSchema import TokenDataSchema
@@ -14,7 +14,7 @@ from entities.UserSchema import UserSchema
 from sqlalchemy.orm import Session
 
 from tools.database import engine, get_db
-from models.UserModel import UserModel
+
 from decouple import config
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -31,7 +31,8 @@ def get_password_hash(password):
 
 def get_user(username: str, db: Session = Depends(get_db)):
     #print('db: ',db)
-    user = db.query(UserModel).filter(UserModel.username == username)
+    from models.UserModel import Modulo
+    user = db.query(Modulo).filter(Modulo.username == username)
     return user.first()
 
 def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):

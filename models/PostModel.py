@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from tools.database import Base, engine
 import datetime
 
+
 class PostModel(Base):  
     __tablename__ = "userlink_post"
     id: Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
@@ -16,7 +17,10 @@ class PostModel(Base):
     updated_at: Mapped[datetime.datetime] =  mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    #tasks: Mapped[list['Task']] = relationship(back_populates="owner")
+    user_id: Mapped[int] = mapped_column(ForeignKey("userlink_user.id",onupdate='CASCADE',ondelete='CASCADE'))
+    user: Mapped['UserModel'] = relationship(back_populates="posts") # type: ignore
+    
+    comments: Mapped[list['CommentModel']] = relationship(back_populates="post") # type: ignore
     
 
 

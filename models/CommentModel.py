@@ -17,7 +17,9 @@ class CommentModel(Base):
     updated_at: Mapped[datetime.datetime] =  mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    #tasks: Mapped[list['Task']] = relationship(back_populates="owner")
+    post_id: Mapped[int] = mapped_column(ForeignKey("userlink_post.id",onupdate='CASCADE',ondelete='CASCADE'))
+    post: Mapped['PostModel'] = relationship(back_populates="comments") # type: ignore
+    
     
 
 

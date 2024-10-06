@@ -5,7 +5,7 @@ from fastapi import APIRouter
 
 from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
-from models.UserModel import UserModel
+from models.UserModel import Modulo
 from tools.database import engine, get_db, get_connection
 from entities.TokenSchema import TokenSchema
 from entities.UserSchema import UserSchema
@@ -49,7 +49,7 @@ async def read_users_me(current_user: Annotated[UserSchema, Depends(tools.auth.g
 
 @user_router.post("/register")
 def create(user: UserSchema, db: Session = Depends(get_db)):
-    new_user = UserModel(**user.model_dump())
+    new_user = Modulo(**user.model_dump())
     new_user.password = tools.auth.get_password_hash(user.password)
     db.add(new_user)
     db.commit()
@@ -59,14 +59,14 @@ def create(user: UserSchema, db: Session = Depends(get_db)):
 
 @user_router.get("/list")
 async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    all_users = db.query(UserModel).all()
+    all_users = db.query(Modulo).all()
     return all_users
 
 
 
 @user_router.delete("/delete/{id}")
 async def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
-    delete_user = db.query(UserModel).filter(UserModel.id == id)
+    delete_user = db.query(Modulo).filter(Modulo.id == id)
     if delete_user == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded")
     else:
@@ -77,7 +77,7 @@ async def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP
 
 @user_router.put('/update/{id}')
 async def update(id:int, user: UserSchema, db:Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    update_user = db.query(UserModel).filter(UserModel.id == id)
+    update_user = db.query(Modulo).filter(Modulo.id == id)
     update_user.first()
     if update_user == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded with {id}")

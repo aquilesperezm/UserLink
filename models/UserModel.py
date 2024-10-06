@@ -4,7 +4,9 @@ from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from tools.database import Base, engine
 import datetime
 
-class UserModel(Base):  
+
+
+class Modulo(Base):  
     __tablename__ = "userlink_user"
     id: Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     fullname: Mapped[str] = mapped_column(nullable=False)
@@ -17,7 +19,7 @@ class UserModel(Base):
     updated_at: Mapped[datetime.datetime] =  mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    #tasks: Mapped[list['Task']] = relationship(back_populates="owner")
+    posts: Mapped[list['PostModel']] = relationship(back_populates="user") # type: ignore
     
 
 
