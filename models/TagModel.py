@@ -6,11 +6,12 @@ import datetime
 
 
 association_table = Table(
-    "userling_rel_post_tag",
+    "userlink_rel_tags_by_post",
     Base.metadata,
     Column("idpost", ForeignKey("userlink_post.id",onupdate='CASCADE',ondelete='CASCADE'), primary_key=True),
     Column("idtag", ForeignKey("userlink_tag.id",onupdate='CASCADE',ondelete='CASCADE'), primary_key=True),
 )
+
 
 
 class TagModel(Base):  
