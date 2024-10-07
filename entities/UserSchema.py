@@ -5,3 +5,4 @@ class UserSchema(BaseModel):
     lastname: str
     username: str
     password: str
+    

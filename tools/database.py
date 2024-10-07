@@ -1,10 +1,17 @@
-from sqlalchemy import create_engine
+
+from sqlalchemy import create_engine, Column, Boolean, event
+from sqlalchemy.orm import sessionmaker, with_loader_criteria, Session, ORMExecuteState
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from fastapi import FastAPI, Depends
+from models.SoftDeleteModel import SoftDeleteModel
+from sqlmodel import SQLModel, create_engine
 
-DATABASE_URL = "postgresql://postgres:root@localhost/userlink_db"
 
-engine = create_engine(DATABASE_URL)
+
+DATABASE_URL = "postgresql://postgres:root@localhost:5432/userlink_db"
+
+engine = create_engine(DATABASE_URL,echo=True)
+
 
 SessionLocal = sessionmaker(
     autocommit=False,
@@ -29,3 +36,15 @@ def get_connection():
         print('No existe la BD')
         exit()
     return conn
+
+@event.listens_for(SessionLocal, "do_orm_execute")
+def _add_filtering_criteria(execute_state):
+    skip_filter = execute_state.execution_options.get("skip_filter", False)
+    if execute_state.is_select and not skip_filter:
+        execute_state.statement = execute_state.statement.options(
+            with_loader_criteria(
+                SoftDeleteModel,
+                lambda cls: cls.is_deleted.is_(False),
+                include_aliases=True,
+            )
+        )

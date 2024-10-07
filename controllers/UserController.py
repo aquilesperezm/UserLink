@@ -59,18 +59,36 @@ def create(user: UserSchema, db: Session = Depends(get_db)):
 
 @user_router.get("/list")
 async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    all_users = db.query(UserModel).all()
+    all_users = db.query(UserModel).execution_options(skip_filter=False).all()
     return all_users
 
+@user_router.get("/everything")
+async def everything(db: Session = Depends(get_db)):
+    return db.query(UserModel).execution_options(skip_filter=True).all()
 
 
 @user_router.delete("/delete/{id}")
 async def delete(id:int,db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    delete_user = db.query(UserModel).filter(UserModel.id == id)
+    delete_user = db.query(UserModel).filter(UserModel.id == id).first()
     if delete_user == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded")
     else:
-        delete_user.delete(synchronize_session=False)
+        delete_user.is_deleted = True
+        db.add(delete_user)
+        db.commit()
+        db.refresh(delete_user)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+
+@user_router.delete("/delete_permanent/{id}")
+async def delete(id:int,db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+    delete_permanet_user = db.query(UserModel).filter(UserModel.id == id)
+    if delete_permanet_user == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded")
+    else:
+        delete_permanet_user.delete(synchronize_session=False)
+        
         db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
  
@@ -86,6 +104,7 @@ async def update(id:int, user: UserSchema, db:Session = Depends(get_db),current_
         update_user.fullname = user.fullname
         update_user.lastname = user.lastname
         update_user.username = user.username
+        
         update_user.password = tools.auth.get_password_hash(user.password)
         
         db.commit()

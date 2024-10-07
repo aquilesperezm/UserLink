@@ -39,6 +39,10 @@ async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.g
     all_posts = db.query(PostModel).all()
     return all_posts
 
+@post_router.get("/everything")
+async def everything(db: Session = Depends(get_db)):
+    return db.query(PostModel).execution_options(skip_visibility_filter=True).all()
+
 @post_router.put('/update/{id}')
 async def update(id:int, post: PostSchema, db:Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     

@@ -34,6 +34,10 @@ async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.g
     all_tags = db.query(TagModel).all()
     return all_tags
 
+@tag_router.get("/everything")
+async def everything(db: Session = Depends(get_db)):
+    return db.query(TagModel).execution_options(skip_visibility_filter=True).all()
+
 @tag_router.put('/update/{id}')
 async def update(id:int, tag: TagSchema, db:Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     update_tag = db.query(TagModel).filter(TagModel.id == id)

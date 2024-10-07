@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Response
+from fastapi import FastAPI, Depends, HTTPException, status, Response, Request
 import models
 from sqlalchemy.orm import Session
 #from database import engine, get_db, get_connection
@@ -17,6 +17,8 @@ from controllers import UserController, PostController, CommentController, TagCo
 
 from tools.database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
+
+import time
   
 SERVER_HOSTNAME = config('SERVER_HOSTNAME')
 SERVER_PORT = config('SERVER_PORT')
@@ -55,6 +57,13 @@ app.include_router(PostController.post_router)
 app.include_router(CommentController.comment_router)
 app.include_router(TagController.tag_router)
 app.include_router(TagsByPostController.tags_by_post_router)
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    print("Time took to process the request and return response is {} sec".format(time.time() - start_time))
+    return response
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host=SERVER_HOSTNAME, port=int(SERVER_PORT), reload=True)

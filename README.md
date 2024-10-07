@@ -10,4 +10,7 @@ pip freeze > requirements.txt
 #### create new enviroment
 py -m venv .venv -r requirements.txt
 
+#### create migrations
+alembic revision --autogenerate -m "Initial migration"
+
 

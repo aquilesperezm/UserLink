@@ -36,6 +36,10 @@ async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.g
     all_comments = db.query(CommentModel).all()
     return all_comments
 
+@comment_router.get("/everything")
+async def everything(db: Session = Depends(get_db)):
+    return db.query(CommentModel).execution_options(skip_visibility_filter=True).all()
+
 @comment_router.put('/update/{id}')
 async def update(id:int, comment: CommentSchema, db:Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     update_comment = db.query(CommentModel).filter(CommentModel.id == id)

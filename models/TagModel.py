@@ -3,7 +3,8 @@ from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from tools.database import Base, engine
 import datetime
-
+from models.SoftDeleteModel import SoftDeleteModel
+from models.TimeStampsModel import TimeStampsModel
 
 association_table = Table(
     "userlink_rel_tags_by_post",
@@ -14,20 +15,14 @@ association_table = Table(
 
 
 
-class TagModel(Base):  
+class TagModel(Base,SoftDeleteModel,TimeStampsModel):  
     __tablename__ = "userlink_tag"
     id: Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
     name: Mapped[str] = mapped_column(nullable=False)
     slug: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
     color: Mapped[str] = mapped_column(nullable=False)
-    
-    created_date: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
-    updated_at: Mapped[datetime.datetime] =  mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+   
     posts_tags: Mapped[list['PostModel']] = relationship( # type: ignore
         secondary=association_table, back_populates="tags_posts"
     )
