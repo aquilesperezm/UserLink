@@ -5,4 +5,5 @@ class CommentSchema(BaseModel):
     author: str
     likes: int
     status: int 
+    post_id: int
     

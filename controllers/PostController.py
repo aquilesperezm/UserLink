@@ -23,8 +23,8 @@ post_router = APIRouter(prefix="/v1/post",tags=["Post"])
  
 @post_router.post("/create")
 def create(post: PostSchema, db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    update_user = db.query(UserModel).get(post.user_id)
-    if update_user == None:
+    user = db.query(UserModel).get(post.user_id)
+    if user == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded with {id}")
     else:
         new_post = PostModel(**post.model_dump())
