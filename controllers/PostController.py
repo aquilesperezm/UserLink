@@ -36,12 +36,12 @@ def create(post: PostSchema, db: Session = Depends(get_db),current_user = Depend
 
 @post_router.get("/list")
 async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    all_posts = db.query(PostModel).all()
+    all_posts =  db.query(PostModel).execution_options(skip_filter=False).all()
     return all_posts
 
 @post_router.get("/everything")
 async def everything(db: Session = Depends(get_db)):
-    return db.query(PostModel).execution_options(skip_visibility_filter=True).all()
+    return db.query(PostModel).execution_options(skip_filter=True).all()
 
 @post_router.put('/update/{id}')
 async def update(id:int, post: PostSchema, db:Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
@@ -66,10 +66,20 @@ async def delete(id:int,db: Session = Depends(get_db),current_user = Depends(too
     if delete_post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="post no finded with {id}")
     else:
+        delete_post.is_delete = True
+        db.add(delete_post)
+        db.commit()
+        db.refresh(delete_post)
+    return Response(status_code=status.HTTP_200_OK)
+ 
+@post_router.delete("/delete_permanent/{id}")
+async def delete(id:int,db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+    delete_post = db.query(PostModel).filter(PostModel.id == id)
+    if delete_post == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="post no finded with {id}")
+    else:
         delete_post.delete(synchronize_session=False)
         db.commit()
     return Response(status_code=status.HTTP_200_OK)
- 
-
 
 

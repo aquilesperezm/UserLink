@@ -33,7 +33,7 @@ def create(comment: CommentSchema, db: Session = Depends(get_db),current_user = 
  
 @comment_router.get("/list")
 async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    all_comments = db.query(CommentModel).all()
+    all_comments = db.query(CommentModel).execution_options(skip_visibility_filter=False).all()
     return all_comments
 
 @comment_router.get("/everything")
@@ -64,10 +64,21 @@ async def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP
     if delete_comment == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded")
     else:
+        delete_comment.is_delete = True
+        db.add(delete_comment)
+        db.commit()
+        db.refresh(delete_comment)
+    return Response(status_code=status.HTTP_200_OK)
+ 
+ 
+@comment_router.delete("/delete_permanent/{id}")
+async def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
+    delete_comment = db.query(CommentModel).filter(CommentModel.id == id)
+    if delete_comment == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded")
+    else:
         delete_comment.delete(synchronize_session=False)
         db.commit()
     return Response(status_code=status.HTTP_200_OK)
- 
-
 
 
