@@ -11,24 +11,24 @@ import tools.auth
 from datetime import datetime, timedelta, timezone
 from decouple import config
 import uvicorn
-from tools.database_deprecated import get_connection
 from models import UserModel,PostModel, CommentModel, TagModel
 from controllers import UserController, PostController, CommentController, TagController, TagsByPostController
-
-from tools.database_deprecated import Base, engine
+import asyncio
+from tools.database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 
 import time
-import tools.database_deprecated
-from tools.database import database
+import tools.database
+from tools.database import create_tables
 from tools.database import connect_db
 from tools.database import disconnect_db
+from tools.database import metadata,engine
   
 SERVER_HOSTNAME = config('SERVER_HOSTNAME')
 SERVER_PORT = config('SERVER_PORT')
 
   
-RESET_FACTORY =  config('RESET_FACTORY')
+PREPARE_DATABASE_FACTORY =  config('PREPARE_DATABASE_FACTORY')
 
 app = FastAPI(
     #openapi_tags=tags_metadata,
@@ -38,10 +38,12 @@ app = FastAPI(
     #docExpansion="None"
 ) 
 
-
-     
 app.add_event_handler('startup',connect_db)
 app.add_event_handler('shutdown',disconnect_db)
+
+async def initial_setup(dropTables=False):     
+    await asyncio.create_task(create_tables(dropTables))
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -66,4 +68,6 @@ async def add_process_time_header(request: Request, call_next):
     return response
 
 if __name__ == "__main__":
+    asyncio.run(initial_setup(dropTables=True)) 
     uvicorn.run("main:app", host=SERVER_HOSTNAME, port=int(SERVER_PORT), reload=True)
+    

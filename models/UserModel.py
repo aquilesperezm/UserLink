@@ -1,7 +1,7 @@
 from sqlalchemy import String, Boolean, Integer, Column, text, TIMESTAMP, ForeignKey, DateTime, func
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
-from tools.database_deprecated import Base, engine
+from tools.database import Base, engine
 import datetime
 from models.SoftDeleteModel import SoftDeleteModel
 from models.TimeStampsModel import TimeStampsModel
@@ -14,7 +14,8 @@ class UserModel(Base, SoftDeleteModel,TimeStampsModel):
     username: Mapped[str] = mapped_column(nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     is_deleted: Mapped[bool] = mapped_column(nullable=False)
-    posts: Mapped[list['PostModel']] = relationship(back_populates="user") # type: ignore
+    
+    #posts: Mapped[list['PostModel']] = relationship(back_populates="user") # type: ignore
     
 
 

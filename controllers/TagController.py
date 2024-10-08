@@ -6,7 +6,7 @@ from fastapi import APIRouter
 from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from models.TagModel import TagModel
-from tools.database_deprecated import engine, get_db, get_connection
+from tools.database import engine, get_db
 from entities.TokenSchema import TokenSchema
 from entities.TagSchema import TagSchema
 

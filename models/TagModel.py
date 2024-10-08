@@ -1,7 +1,7 @@
 from sqlalchemy import String, Boolean, Integer, Column, text, TIMESTAMP, ForeignKey, DateTime, func, Table
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
-from tools.database_deprecated import Base, engine
+from tools.database import Base, engine
 import datetime
 from models.SoftDeleteModel import SoftDeleteModel
 from models.TimeStampsModel import TimeStampsModel
@@ -23,15 +23,11 @@ class TagModel(Base,SoftDeleteModel,TimeStampsModel):
     description: Mapped[str] = mapped_column(nullable=False)
     color: Mapped[str] = mapped_column(nullable=False)
    
+    '''
     posts_tags: Mapped[list['PostModel']] = relationship( # type: ignore
         secondary=association_table, back_populates="tags_posts"
     )
-    
-    #user_id: Mapped[int] = mapped_column(ForeignKey("userlink_user.id",onupdate='CASCADE',ondelete='CASCADE'))
-    #user: Mapped['UserModel'] = relationship(back_populates="posts") # type: ignore
-    
-    #comments: Mapped[list['CommentModel']] = relationship(back_populates="post") # type: ignore
-    
-
+    '''
+   
 
 

@@ -1,6 +1,4 @@
 
-
-
 from fastapi import APIRouter
 
 from fastapi import FastAPI, Depends, HTTPException, status, Response
@@ -8,7 +6,7 @@ from sqlalchemy.orm import Session
 from models.CommentModel import CommentModel
 from models.PostModel import PostModel
 
-from tools.database_deprecated import engine, get_db, get_connection
+from tools.database import engine, get_db
 from entities.TokenSchema import TokenSchema
 from entities.CommentSchema import CommentSchema
 
@@ -20,6 +18,7 @@ import tools.auth
 from datetime import datetime, timedelta, timezone
 from decouple import config
 
+# creating a var for import router
 comment_router = APIRouter(prefix="/v1/comment",tags=["Comment"])
 
 @comment_router.post("/create")
@@ -30,7 +29,7 @@ def create(comment: CommentSchema, db: Session = Depends(get_db),current_user = 
     db.refresh(new_comment)
     return new_comment
 
- 
+
 @comment_router.get("/list")
 async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     all_comments = db.query(CommentModel).execution_options(skip_visibility_filter=False).all()

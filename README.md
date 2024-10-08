@@ -1,7 +1,13 @@
 # UserLink
-Gestion de Usuarios, Publicaciones y Comentarios
+A technical test that shows the use of FastAPI and SQLAlchemy. It is composed of the models or entities: User, Post, Comment and Tag; where a user can create many Posts, a Post can have many Comments and this in turn can have many Tags, as well as a Tag can have many Comments.
 
-#### generate new secret string
+The application is supported by database migrations, which allows for its prompt restoration. All queries made to the database are asynchronous. 
+
+## Installing App 
+
+
+## Installing Database
+
 openssl rand -hex 32
 
 #### generate new secret string
