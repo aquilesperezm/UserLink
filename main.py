@@ -1,20 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Response, Request
-import models
-from sqlalchemy.orm import Session
-#from database import engine, get_db, get_connection
-#from schemas import UserSchema, UserSchema,TaskSchema, Token, TokenData
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from typing import Annotated
-from psycopg2 import Error, OperationalError
-from passlib.context import CryptContext
-import tools.auth
-from datetime import datetime, timedelta, timezone
+from fastapi import FastAPI, Request
 from decouple import config
 import uvicorn
-from models import UserModel,PostModel, CommentModel, TagModel
 from controllers import UserController, PostController, CommentController, TagController, TagsByPostController
 import asyncio
-from tools.database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 
 import time

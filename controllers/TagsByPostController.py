@@ -12,7 +12,7 @@ from entities.TagsByPostSchema import TagsByPostSchema
 
 from models.PostModel import PostModel
 from models.TagModel import TagModel
-from models.TagModel import association_table
+#from models.TagModel import association_table
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import Annotated

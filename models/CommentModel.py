@@ -14,10 +14,10 @@ class CommentModel(Base,SoftDeleteModel, TimeStampsModel):
     likes: Mapped[int] = mapped_column(nullable=False)
     status: Mapped[int] = mapped_column(nullable=False)
     
-    '''
+    # One to Many
     post_id: Mapped[int] = mapped_column(ForeignKey("userlink_post.id",onupdate='CASCADE',ondelete='CASCADE'))
     post: Mapped['PostModel'] = relationship(back_populates="comments") # type: ignore
-    '''
+    
     
 
 

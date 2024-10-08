@@ -19,4 +19,15 @@ py -m venv .venv -r requirements.txt
 #### create migrations
 alembic revision --autogenerate -m "Initial migration"
 
+alembic history -> show all revisions
+
+alembic show <id revisions> -> show details of revision
+
+alembic upgrade < head | id rev >
+alembic downgrade < base | id rev>
+alembic upgrade +1
+alembic downgrade -1
+
+
+
 
