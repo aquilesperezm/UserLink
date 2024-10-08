@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI, Request
 from decouple import config
 import uvicorn
@@ -11,13 +12,11 @@ from tools.database import create_tables
 from tools.database import connect_db
 from tools.database import disconnect_db
 from tools.database import metadata,engine
+from str2bool import str2bool
   
 SERVER_HOSTNAME = config('SERVER_HOSTNAME')
 SERVER_PORT = config('SERVER_PORT')
-
   
-PREPARE_DATABASE_FACTORY =  config('PREPARE_DATABASE_FACTORY')
-
 app = FastAPI(
     #openapi_tags=tags_metadata,
     title="UserLink - API Documentation",
@@ -55,7 +54,10 @@ async def add_process_time_header(request: Request, call_next):
     print("Time took to process the request and return response is {} sec".format(time.time() - start_time))
     return response
 
+RESET_DB_FACTORY = str2bool(config('RESET_DB_FACTORY'))
+ 
 if __name__ == "__main__":
-    asyncio.run(initial_setup(dropTables=True)) 
+    
+    asyncio.run(initial_setup(dropTables=RESET_DB_FACTORY)) 
     uvicorn.run("main:app", host=SERVER_HOSTNAME, port=int(SERVER_PORT), reload=True)
     

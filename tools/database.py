@@ -12,7 +12,16 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine
 )
 
-DATABASE_URI = "postgresql+asyncpg://postgres:root@localhost:5432/userlink_db"
+from decouple import config
+DATABASE_HOSTNAME = config('DATABASE_HOSTNAME')
+DATABASE_PORT = config('DATABASE_PORT')
+DATABASE_USERNAME = config('DATABASE_USER')
+DATABASE_PASSWORD = config('DATABASE_PASSWORD')
+DATABASE_DBNAME = config('DATABASE_DBNAME')
+
+
+#DATABASE_URI = "postgresql+asyncpg://postgres:root@localhost:5432/userlink_db"
+DATABASE_URI = 'postgresql+asyncpg://'+DATABASE_USERNAME+':'+DATABASE_PASSWORD+'@'+DATABASE_HOSTNAME+':'+DATABASE_PORT+'/'+DATABASE_DBNAME
 
 database = Database(DATABASE_URI)
 

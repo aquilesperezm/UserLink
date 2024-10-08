@@ -64,21 +64,30 @@ Environment variables manage all the external features of the application, the D
 - **ALGORITHM**: Json Encrypt Algorithm (Ex: "HS256")
 
 ## General Config
-**PREPARE_DATABASE_FACTORY**: Restart Database Structure and Data
+**RESET_DB_FACTORY**: Restart Database Structure and Data
 
 ## Database Migrations
 
-#### create migrations
-alembic revision --autogenerate -m "Initial migration"
+Database migration is the process of migrating data from one or more source databases to one or more target databases using a database migration service.
+
+- **Create a new migration**
+
+alembic revision --autogenerate -m "ex: Initial migration"
+
+- **Query all migrations**
 
 alembic history -> show all revisions
 
+- **Show migration details**
+
 alembic show <id revisions> -> show details of revision
 
-alembic upgrade < head | id rev >
-alembic downgrade < base | id rev>
-alembic upgrade +1
-alembic downgrade -1
+- **Others Commands**
+
+- alembic upgrade *< head | id rev >*: Upgrade migration with code or head
+- alembic downgrade *< base | id rev>* : Downgrade migration code or base
+- alembic upgrade *+1*: Upgrade migration with revision number
+- alembic downgrade *-1*: Downgrade migration with revision number
 
 
 
