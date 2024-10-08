@@ -5,15 +5,53 @@ The application is supported by database migrations, which allows for its prompt
 
 ## Installing App 
 
+When we are going to install the application we must create a virtual environment, which will contain all the libraries of our project.
+
+<b>Step #1</b>
+
+Create a new Virtual Environment
+
+<code>py -m venv .venv</code>
+
+We must verify that the environment is activated, if not, we must activate it manually
+
+<code>cd \<environment-folder></code>
+
+<code>cd \<Scripts></code>
+
+Run <code>Activate.bat</code>
+
+<b>Step #2</b>
+
+Install all requirements
+
+<code>py -m pip install -r requirements.txt</code>
 
 ## Installing Database
+We must install the database in the PostgreSQL database manager.
+
+<b>Step #1</b>
+
+psql -u postgres -p
+
+<b>Step #2</b>
+
+CREATE DATABASE userlink_db;
+
+## Environment Variables
+
+Environment variables manage all the external features of the application, the DB connection and its initial data.
+
 
 openssl rand -hex 32
 
 #### generate new secret string
 pip freeze > requirements.txt
 
-#### create new enviroment
+### install requirements
+py -m pip install -r requirements.txt
+
+#### create new environment
 py -m venv .venv -r requirements.txt
 
 #### create migrations
