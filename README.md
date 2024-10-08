@@ -45,7 +45,6 @@ Environment variables manage all the external features of the application, the D
 ### Server Config 
 
 - **SERVER_HOSTNAME**='localhost' -> Nombre del servidor FastAPI(en muchos casos Localhost)
-
 - **SERVER_PORT**=8000 -> Puerto de escucha para el servidor FastAPI
 
 ### Database Config 
@@ -56,27 +55,18 @@ Environment variables manage all the external features of the application, the D
 - **DATABASE_PASSWORD**: Database Password
 - **DATABASE_DBNAME**: Database Name
 
-### JSON Web Token
+### JSON Web Token Config
 
-**ACCESS_TOKEN_EXPIRE_MINUTES**: Token expiration time
-
-**SECRET_KEY**: Key to encrypt token
-
+- **ACCESS_TOKEN_EXPIRE_MINUTES**: Token expiration time
+- **SECRET_KEY**: Key to encrypt token
 ##### Generating new key #####
 ```openssl rand -hex 32```
+- **ALGORITHM**: Json Encrypt Algorithm (Ex: "HS256")
 
-**ALGORITHM**: Json Encrypt Algorithm (Ex: "HS256")
+## General Config
+**PREPARE_DATABASE_FACTORY**: Restart Database Structure and Data
 
-
-
-#### generate new secret string
-pip freeze > requirements.txt
-
-### install requirements
-py -m pip install -r requirements.txt
-
-#### create new environment
-py -m venv .venv -r requirements.txt
+## Database Migrations
 
 #### create migrations
 alembic revision --autogenerate -m "Initial migration"
