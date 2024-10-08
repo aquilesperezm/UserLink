@@ -7,7 +7,7 @@ from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from models.PostModel import PostModel
 from models.UserModel import UserModel
-from tools.database import engine, get_db, get_connection
+from tools.database_deprecated import engine, get_db, get_connection
 from entities.TokenSchema import TokenSchema
 from entities.PostSchema import PostSchema
 

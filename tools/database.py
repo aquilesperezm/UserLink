@@ -1,17 +1,15 @@
-
-from sqlalchemy import create_engine, Column, Boolean, event
-from sqlalchemy.orm import sessionmaker, with_loader_criteria, Session, ORMExecuteState
-from sqlalchemy.ext.declarative import declarative_base
-from fastapi import FastAPI, Depends
+from databases import Database
+from sqlalchemy import event
+import sqlalchemy
+from sqlalchemy.orm import sessionmaker,with_loader_criteria
 from models.SoftDeleteModel import SoftDeleteModel
-from sqlmodel import SQLModel, create_engine
 
+DATABASE_URI = "postgresql+asyncpg://postgres:root@localhost:5432/userlink_db"
 
+database = Database(DATABASE_URI)
 
-DATABASE_URL = "postgresql://postgres:root@localhost:5432/userlink_db"
-
-engine = create_engine(DATABASE_URL,echo=True)
-
+metadata = sqlalchemy.MetaData()
+engine = sqlalchemy.create_engine(DATABASE_URI)
 
 SessionLocal = sessionmaker(
     autocommit=False,
@@ -19,7 +17,14 @@ SessionLocal = sessionmaker(
     bind=engine
 )
 
-Base = declarative_base()
+async def connect_db():
+    print('connecting database')
+    await database.connect()
+
+async def disconnect_db():
+    print('disconnecting database - Good Bye!!!')
+    await database.disconnect()
+
 
 def get_db():
     db = SessionLocal()
@@ -28,15 +33,6 @@ def get_db():
     finally:
         db.close()
         
-
-def get_connection():
-    try:
-        conn = engine.connect()
-    except Exception:
-        print('No existe la BD')
-        exit()
-    return conn
-
 @event.listens_for(SessionLocal, "do_orm_execute")
 def _add_filtering_criteria(execute_state):
     skip_filter = execute_state.execution_options.get("skip_filter", False)

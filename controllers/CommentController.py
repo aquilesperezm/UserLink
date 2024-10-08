@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from models.CommentModel import CommentModel
 from models.PostModel import PostModel
 
-from tools.database import engine, get_db, get_connection
+from tools.database_deprecated import engine, get_db, get_connection
 from entities.TokenSchema import TokenSchema
 from entities.CommentSchema import CommentSchema
 

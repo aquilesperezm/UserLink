@@ -1,7 +1,7 @@
 from sqlalchemy import String, Boolean, Integer, Column, text, TIMESTAMP, ForeignKey, DateTime, func
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
-from tools.database import Base, engine
+from tools.database_deprecated import Base, engine
 import datetime
 from models.TagModel import association_table
 from models.SoftDeleteModel import SoftDeleteModel

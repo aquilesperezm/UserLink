@@ -13,7 +13,7 @@ from entities.TokenDataSchema import TokenDataSchema
 from entities.UserSchema import UserSchema
 from sqlalchemy.orm import Session
 
-from tools.database import engine, get_db
+from tools.database_deprecated import engine, get_db
 
 from decouple import config
 
