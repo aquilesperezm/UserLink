@@ -32,18 +32,42 @@ We must install the database in the PostgreSQL database manager.
 
 <b>Step #1</b>
 
-psql -u postgres -p
+```psql -u postgres -p```
 
 <b>Step #2</b>
 
-CREATE DATABASE userlink_db;
+```CREATE DATABASE userlink_db;```
 
 ## Environment Variables
 
 Environment variables manage all the external features of the application, the DB connection and its initial data.
 
+### Server Config 
 
-openssl rand -hex 32
+- **SERVER_HOSTNAME**='localhost' -> Nombre del servidor FastAPI(en muchos casos Localhost)
+
+- **SERVER_PORT**=8000 -> Puerto de escucha para el servidor FastAPI
+
+### Database Config 
+
+- **DATABASE_HOSTNAME** : Database Server HostName
+- **DATABASE_PORT**: Database Service Port  
+- **DATABASE_USERNAME**: Database Username
+- **DATABASE_PASSWORD**: Database Password
+- **DATABASE_DBNAME**: Database Name
+
+### JSON Web Token
+
+**ACCESS_TOKEN_EXPIRE_MINUTES**: Token expiration time
+
+**SECRET_KEY**: Key to encrypt token
+
+##### Generating new key #####
+```openssl rand -hex 32```
+
+**ALGORITHM**: Json Encrypt Algorithm (Ex: "HS256")
+
+
 
 #### generate new secret string
 pip freeze > requirements.txt
