@@ -9,9 +9,11 @@ from fastapi.middleware.cors import CORSMiddleware
 import time
 from tools.database import engine, Metadata
 
+# Importing enviroments vars for wakeup server
 SERVER_HOSTNAME = config('SERVER_HOSTNAME')
 SERVER_PORT = config('SERVER_PORT')
 
+# Creating a FastAPI app
 app = FastAPI(
     #openapi_tags=tags_metadata,
     title="UserLink - API Documentation",
@@ -20,8 +22,10 @@ app = FastAPI(
     #docExpansion="None"
 ) 
 
+# When 'shutdown' event, launch 'close_connection method'
 app.add_event_handler('shutdown',close_connection)   
 
+# 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],
