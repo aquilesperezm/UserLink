@@ -8,8 +8,8 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 #from pydantic import BaseModel
 
-from entities.TokenDataSchema import TokenDataSchema
-from entities.UserSchema import UserSchema
+from schemes.TokenDataSchema import TokenDataSchema
+from schemes.UserSchema import UserSchema
 from sqlalchemy.orm import Session
 
 from tools.database import engine, get_db

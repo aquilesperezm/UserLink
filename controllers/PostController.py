@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 from models.PostModel import PostModel
 from models.UserModel import UserModel
 from tools.database import engine, get_db
-from entities.TokenSchema import TokenSchema
-from entities.PostSchema import PostSchema
+from schemes.TokenSchema import TokenSchema
+from schemes.PostSchema import PostSchema
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import Annotated

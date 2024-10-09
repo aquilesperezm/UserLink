@@ -4,8 +4,8 @@ from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from models.UserModel import UserModel
 from tools.database import engine, get_db
-from entities.TokenSchema import TokenSchema
-from entities.UserSchema import UserSchema
+from schemes.TokenSchema import TokenSchema
+from schemes.UserSchema import UserSchema
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import Annotated
@@ -19,7 +19,7 @@ user_router = APIRouter(prefix="/v1/user",tags=["User"])
 
 ACCESS_TOKEN_EXPIRE_MINUTES = config('ACCESS_TOKEN_EXPIRE_MINUTES')
 
-@user_router.post("/login", include_in_schema=False)
+@user_router.post("/login")
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)) -> TokenSchema:
     
     user = tools.auth.authenticate_user(form_data.username, form_data.password,db)

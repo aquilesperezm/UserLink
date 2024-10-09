@@ -7,8 +7,8 @@ from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from models.TagModel import TagModel
 from tools.database import engine, get_db
-from entities.TokenSchema import TokenSchema
-from entities.TagSchema import TagSchema
+from schemes.TokenSchema import TokenSchema
+from schemes.TagSchema import TagSchema
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import Annotated
