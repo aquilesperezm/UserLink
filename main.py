@@ -1,33 +1,17 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Response, Request
-import models
-from sqlalchemy.orm import Session
-#from database import engine, get_db, get_connection
-#from schemas import UserSchema, UserSchema,TaskSchema, Token, TokenData
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from typing import Annotated
-from psycopg2 import Error, OperationalError
-from passlib.context import CryptContext
-import tools.auth
-from datetime import datetime, timedelta, timezone
+from fastapi import FastAPI, Depends, Request
 from decouple import config
 import uvicorn
 from tools.database import start_connection
-from models import UserModel,PostModel, CommentModel, TagModel
 from controllers import UserController, PostController, CommentController, TagController, TagsByPostController
 import str2bool
 from tools.database import Base, engine, close_connection
 from fastapi.middleware.cors import CORSMiddleware
-
-
 import time
-import tools.database
 from tools.database import engine, Metadata
 
-  
 SERVER_HOSTNAME = config('SERVER_HOSTNAME')
 SERVER_PORT = config('SERVER_PORT')
 
-  
 app = FastAPI(
     #openapi_tags=tags_metadata,
     title="UserLink - API Documentation",
@@ -37,7 +21,7 @@ app = FastAPI(
 ) 
 
 app.add_event_handler('shutdown',close_connection)   
-     
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],
@@ -51,8 +35,6 @@ app.include_router(PostController.post_router)
 app.include_router(CommentController.comment_router)
 app.include_router(TagController.tag_router)
 app.include_router(TagsByPostController.tags_by_post_router)
-
-
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):

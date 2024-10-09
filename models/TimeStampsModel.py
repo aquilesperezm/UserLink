@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import func
 from sqlalchemy.sql.sqltypes import DateTime
 import datetime

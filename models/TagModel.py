@@ -1,8 +1,6 @@
-from sqlalchemy import String, Boolean, Integer, Column, text, TIMESTAMP, ForeignKey, DateTime, func, Table
-from sqlalchemy.sql.sqltypes import DateTime
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
-from tools.database import Base, engine
-import datetime
+from sqlalchemy import Column, ForeignKey, Table
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from tools.database import Base
 from models.SoftDeleteModel import SoftDeleteModel
 from models.TimeStampsModel import TimeStampsModel
 
