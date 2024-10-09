@@ -1,6 +1,3 @@
-
-
-
 from fastapi import APIRouter
 
 from fastapi import FastAPI, Depends, HTTPException, status, Response

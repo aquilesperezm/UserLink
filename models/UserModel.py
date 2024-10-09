@@ -13,7 +13,6 @@ class UserModel(Base, SoftDeleteModel,TimeStampsModel):
     lastname: Mapped[str] = mapped_column(nullable=False)
     username: Mapped[str] = mapped_column(nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
-    is_deleted: Mapped[bool] = mapped_column(nullable=False)
     
     posts: Mapped[list['PostModel']] = relationship(back_populates="user") # type: ignore
     
