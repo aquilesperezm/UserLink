@@ -1,6 +1,6 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from tools.database import Base, engine
+from tools.db import Base 
 from models.SoftDeleteModel import SoftDeleteModel
 from models.TimeStampsModel import TimeStampsModel
 

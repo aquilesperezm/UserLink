@@ -1,17 +1,17 @@
+import asyncio
 from fastapi import FastAPI, Depends, Request
 from decouple import config
 import uvicorn
-from tools.database import start_connection
 from controllers import UserController, PostController, CommentController, TagController, TagsByPostController
 import str2bool
-from tools.database import Base, engine, close_connection
 from fastapi.middleware.cors import CORSMiddleware
 import time
-from tools.database import engine, Metadata
+from tools.db import close_connection,Engine,Base,create_all_tables, drop_all_tables
 
 # Importing enviroments vars for wakeup server
 SERVER_HOSTNAME = config('SERVER_HOSTNAME')
 SERVER_PORT = config('SERVER_PORT')
+RESET_FACTORY =  str2bool.str2bool(config('RESET_FACTORY'))
 
 # Creating a FastAPI app
 app = FastAPI(
@@ -22,7 +22,7 @@ app = FastAPI(
     #docExpansion="None"
 ) 
 
-# When 'shutdown' event, launch 'close_connection method'
+#When 'shutdown' event, launch 'close_connection method'
 app.add_event_handler('shutdown',close_connection)   
 
 # 
@@ -48,8 +48,8 @@ async def add_process_time_header(request: Request, call_next):
     return response
 
 if __name__ == "__main__":
-    RESET_FACTORY =  str2bool.str2bool(config('RESET_FACTORY'))
     if RESET_FACTORY:
-        Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
+        print('------------------ droping all tables -------------------- ')
+        asyncio.run(drop_all_tables())    
+    asyncio.run(create_all_tables())
     uvicorn.run("main:app", host=SERVER_HOSTNAME, port=int(SERVER_PORT), reload=True, use_colors=True)

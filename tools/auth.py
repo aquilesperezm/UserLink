@@ -11,8 +11,9 @@ from passlib.context import CryptContext
 from schemes.TokenDataSchema import TokenDataSchema
 from schemes.UserSchema import UserSchema
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from tools.database import engine, get_db
+from tools.db import get_session as get_db
 
 from decouple import config
 
@@ -28,13 +29,13 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-def get_user(username: str, db: Session = Depends(get_db)):
+def get_user(username: str, db: AsyncSession = Depends(get_db)):
     #print('db: ',db)
     from models.UserModel import UserModel
     user = db.query(UserModel).filter(UserModel.username == username)
     return user.first()
 
-def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
+def authenticate_user(username: str, password: str, db: AsyncSession = Depends(get_db)):
     user = get_user(username,db)
     if not user:
         return False

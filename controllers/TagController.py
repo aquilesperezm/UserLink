@@ -6,9 +6,10 @@ from fastapi import APIRouter
 from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from models.TagModel import TagModel
-from tools.database import engine, get_db
+from tools.db import get_session as get_db
 from schemes.TokenSchema import TokenSchema
 from schemes.TagSchema import TagSchema
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import Annotated
@@ -21,7 +22,7 @@ from decouple import config
 tag_router = APIRouter(prefix="/v1/tag",tags=["Tag"])
  
 @tag_router.post("/create")
-def create(tag: TagSchema, db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+def create(tag: TagSchema, db: AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     new_tag = TagModel(**tag.model_dump())
     db.add(new_tag)
     db.commit()
@@ -30,16 +31,16 @@ def create(tag: TagSchema, db: Session = Depends(get_db),current_user = Depends(
 
 
 @tag_router.get("/list")
-async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+async def read(db: AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     all_tags = db.query(TagModel).execution_options(skip_filter=False).all()
     return all_tags
 
 @tag_router.get("/everything")
-async def everything(db: Session = Depends(get_db)):
+async def everything(db: AsyncSession = Depends(get_db)):
     return db.query(TagModel).execution_options(skip_filter=True).all()
 
 @tag_router.put('/update/{id}')
-async def update(id:int, tag: TagSchema, db:Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+async def update(id:int, tag: TagSchema, db:AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     update_tag = db.query(TagModel).filter(TagModel.id == id)
     if update_tag == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="tag no finded with {id}")
@@ -49,7 +50,7 @@ async def update(id:int, tag: TagSchema, db:Session = Depends(get_db),current_us
     return update_tag.first()
 
 @tag_router.delete("/delete/{id}")
-async def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
+async def delete(id:int,db: AsyncSession = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
     delete_tag = db.query(TagModel).filter(TagModel.id == id)
     if delete_tag == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="tag no finded")
@@ -62,7 +63,7 @@ async def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP
  
 
 @tag_router.delete("/delete_permanent/{id}")
-async def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
+async def delete(id:int,db: AsyncSession = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
     delete_tag = db.query(TagModel).filter(TagModel.id == id)
     if delete_tag == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="tag no finded")

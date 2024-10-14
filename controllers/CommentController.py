@@ -6,9 +6,10 @@ from sqlalchemy.orm import Session
 from models.CommentModel import CommentModel
 from models.PostModel import PostModel
 
-from tools.database import engine, get_db
+from tools.db import get_session as get_db
 from schemes.TokenSchema import TokenSchema
 from schemes.CommentSchema import CommentSchema
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import Annotated
@@ -22,7 +23,7 @@ from decouple import config
 comment_router = APIRouter(prefix="/v1/comment",tags=["Comment"])
 
 @comment_router.post("/create")
-def create(comment: CommentSchema, db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+def create(comment: CommentSchema, db: AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     new_comment = CommentModel(**comment.model_dump())
     db.add(new_comment)
     db.commit()
@@ -31,16 +32,16 @@ def create(comment: CommentSchema, db: Session = Depends(get_db),current_user = 
 
 
 @comment_router.get("/list")
-async def read(db: Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+async def read(db: AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     all_comments = db.query(CommentModel).execution_options(skip_visibility_filter=False).all()
     return all_comments
 
 @comment_router.get("/everything")
-async def everything(db: Session = Depends(get_db)):
+async def everything(db: AsyncSession = Depends(get_db)):
     return db.query(CommentModel).execution_options(skip_visibility_filter=True).all()
 
 @comment_router.put('/update/{id}')
-async def update(id:int, comment: CommentSchema, db:Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+async def update(id:int, comment: CommentSchema, db:AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     update_comment = db.query(CommentModel).filter(CommentModel.id == id)
     update_comment.first()
     
@@ -58,7 +59,7 @@ async def update(id:int, comment: CommentSchema, db:Session = Depends(get_db),cu
     return update_comment.first()
 
 @comment_router.delete("/delete/{id}")
-async def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
+async def delete(id:int,db: AsyncSession = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
     delete_comment = db.query(CommentModel).filter(CommentModel.id == id)
     if delete_comment == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded")
@@ -71,7 +72,7 @@ async def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP
  
  
 @comment_router.delete("/delete_permanent/{id}")
-async def delete(id:int,db: Session = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
+async def delete(id:int,db: AsyncSession = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
     delete_comment = db.query(CommentModel).filter(CommentModel.id == id)
     if delete_comment == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded")

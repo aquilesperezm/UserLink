@@ -1,4 +1,5 @@
 
+
 from sqlalchemy import create_engine, Column, Boolean, event, Connection
 from sqlalchemy.orm import sessionmaker, with_loader_criteria, Session, ORMExecuteState
 from sqlalchemy.ext.declarative import declarative_base
@@ -9,17 +10,25 @@ import sqlalchemy
 from decouple import config
 import str2bool
 
+from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
+from contextlib import asynccontextmanager
+'''
 DATABASE_HOSTNAME = config('DATABASE_HOSTNAME')
 DATABASE_PORT = config('DATABASE_PORT')
 DATABASE_USERNAME = config('DATABASE_USERNAME')
 DATABASE_PASSWORD = config('DATABASE_PASSWORD')
 DATABASE_DBNAME = config('DATABASE_DBNAME')
+ASYNC_ENVIRONMENT = str2bool.str2bool(config('ASYNC_ENVIRONMENT'))
+URI_ASYNC:str = 'postgresql+asyncpg://'+DATABASE_USERNAME+':'+DATABASE_PASSWORD+'@'+DATABASE_HOSTNAME+':'+DATABASE_PORT+'/'+DATABASE_DBNAME
+
 
 #DATABASE_URI = "postgresql://postgres:root@localhost:5432/userlink_db"
+URI_PARALELE:str = 'postgresql://'+DATABASE_USERNAME+':'+DATABASE_PASSWORD+'@'+DATABASE_HOSTNAME+':'+DATABASE_PORT+'/'+DATABASE_DBNAME
 DATABASE_URI = 'postgresql://'+DATABASE_USERNAME+':'+DATABASE_PASSWORD+'@'+DATABASE_HOSTNAME+':'+DATABASE_PORT+'/'+DATABASE_DBNAME
 
 engine = create_engine(DATABASE_URI,echo=True)
-
 
 SessionLocal = sessionmaker(
     autocommit=False,
@@ -68,3 +77,4 @@ def _add_filtering_criteria(execute_state):
                 include_aliases=True,
             )
         )
+'''
