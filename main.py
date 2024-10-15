@@ -9,10 +9,12 @@ import time
 from tools.db import close_connection,Engine,Base,create_all_tables, drop_all_tables
 
 # Importing enviroments vars for wakeup server
+# Importing enviroments vars for wakeup server
 SERVER_HOSTNAME = config('SERVER_HOSTNAME')
 SERVER_PORT = config('SERVER_PORT')
 RESET_FACTORY =  str2bool.str2bool(config('RESET_FACTORY'))
 
+# Creating a FastAPI app
 # Creating a FastAPI app
 app = FastAPI(
     #openapi_tags=tags_metadata,
@@ -25,6 +27,7 @@ app = FastAPI(
 #When 'shutdown' event, launch 'close_connection method'
 app.add_event_handler('shutdown',close_connection)   
 
+# 
 # 
 app.add_middleware(
     CORSMiddleware,
