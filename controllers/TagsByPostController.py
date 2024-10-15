@@ -4,7 +4,7 @@
 from fastapi import APIRouter
 
 from fastapi import FastAPI, Depends, HTTPException, status, Response
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from tools.db import get_session as get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemes.TokenSchema import TokenSchema
@@ -12,7 +12,7 @@ from schemes.TagSchema import TagSchema
 from schemes.TagsByPostSchema import TagsByPostSchema
 
 from models.PostModel import PostModel
-from models.TagModel import TagModel
+from models.TagModel import TagModel, association_table
 #from models.TagModel import association_table
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -22,29 +22,33 @@ from passlib.context import CryptContext
 import tools.auth
 from datetime import datetime, timedelta, timezone
 from decouple import config
+from sqlalchemy.future import select
 
 tags_by_post_router = APIRouter(prefix="/v1/tagsbypost",tags=["Tags by Post"])
  
 @tags_by_post_router.post("/add_tag_to_post")
-def create(tbp: TagsByPostSchema, db: AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    #new_tbp = TagsByPostModel(**tbp.model_dump())
-    post = db.query(PostModel).filter(PostModel.id == tbp.idpost).first()
-    tag = db.query(TagModel).get(tbp.idtag)
+async def create(tbp: TagsByPostSchema, db: AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+   
+    await db.execute(association_table.insert().values(idpost=tbp.idpost,idtag=tbp.idtag))
     
-    post.tags_posts.append(tag)
-    db.add(post)
-    db.commit()
+    await db.commit()
     return Response(status_code=status.HTTP_200_OK)    
     
 
-
+'''
 @tags_by_post_router.get("/list_tags_by_post/{idpost}")
 async def read(idpost:int,db: AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     #all_tags = db.query(PostModel).all()
-    post = db.query(PostModel).filter(PostModel.id == idpost).first()
-    all_tags = post.tags_posts
+    #post = db.query(PostModel).filter(PostModel.id == idpost).first()
+    #all_tags = post.tags_posts
+    #return all_tags
+    query = (select(PostModel, TagModel)
+            .join(PostModel)
+            .options(joinedload(PostModel.id))
+        )
+    result = await db.execute(query)
+    return result.unique().scalars().all()
     
-    return all_tags
 
 @tags_by_post_router.get("/list_posts_by_tag/{idtag}")
 async def read(idtag:int,db: AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
@@ -52,7 +56,7 @@ async def read(idtag:int,db: AsyncSession = Depends(get_db),current_user = Depen
     all_posts = tag.posts_tags
     return all_posts
 
-'''
+
 @tags_by_post_router.put('/update/{id}')
 async def update(id:int, tag: TagSchema, db:Session = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
     update_tag = db.query(TagModel).filter(TagModel.id == id)
@@ -62,7 +66,7 @@ async def update(id:int, tag: TagSchema, db:Session = Depends(get_db),current_us
         update_tag.update(tag.model_dump(), synchronize_session=False)
         db.commit()
     return update_tag.first()
-'''
+
 
 @tags_by_post_router.delete("/delete_by_post/{idpost}")
 async def delete(idpost:int,db: AsyncSession = Depends(get_db), status_code = status.HTTP_204_NO_CONTENT,current_user = Depends(tools.auth.get_current_active_user)):
@@ -76,6 +80,6 @@ async def delete(idpost:int,db: AsyncSession = Depends(get_db), status_code = st
         db.commit()
     return Response(status_code=status.HTTP_200_OK)
  
-
+'''
 
 
