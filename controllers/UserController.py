@@ -6,7 +6,7 @@ from models.UserModel import UserModel
 #from tools.database import engine, get_db
 from tools.db import get_session as get_db
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlalchemy.future import select
 from schemes.TokenSchema import TokenSchema
 from schemes.UserSchema import UserSchema
 
@@ -49,67 +49,59 @@ async def read_users_me(current_user: Annotated[UserSchema, Depends(tools.auth.g
 
 
 @user_router.post("/register")
-async def create(user: UserSchema, db: AsyncSession = Depends(get_db)):
+async def create(user: UserSchema, db: AsyncSession = Depends(get_db)) -> UserSchema:
     new_user = UserModel(**user.model_dump())
     new_user.password = tools.auth.get_password_hash(user.password)
     db.add(new_user)
     await db.commit()
-    db.refresh(new_user)
-    return new_user
+    return user
 
 
 @user_router.get("/list")
 async def read(db: AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    all_users = db.query(UserModel).execution_options(skip_filter=False).all()
-    return all_users
+    #all_users = db.query(UserModel).execution_options(skip_filter=False).all()
+    statement = select(UserModel).where(UserModel.is_deleted == False)
+    result = await db.execute(statement)
+    return result.scalars().all()
+
 
 @user_router.get("/everything")
 async def everything(db: AsyncSession = Depends(get_db)):
-    return db.query(UserModel).execution_options(skip_filter=True).all()
-
+    statement = select(UserModel)
+    result = await db.execute(statement)
+    return result.scalars().all()
+    
 
 @user_router.delete("/delete/{id}")
 async def delete(id:int,db: AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    delete_user = db.query(UserModel).filter(UserModel.id == id).first()
-    if delete_user == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded")
-    else:
-        delete_user.is_deleted = True
-        db.add(delete_user)
-        db.commit()
-        db.refresh(delete_user)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
-
+    result = await db.execute(select(UserModel).filter(UserModel.id == id))
+    user = result.scalars().first()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    user.is_deleted = True
+    await db.commit()
+    return user
 
 
 @user_router.delete("/delete_permanent/{id}")
 async def delete(id:int,db: AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    delete_permanet_user = db.query(UserModel).filter(UserModel.id == id)
-    if delete_permanet_user == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded")
-    else:
-        delete_permanet_user.delete(synchronize_session=False)
-        
-        db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    result = await db.execute(select(UserModel).filter(UserModel.id == id))
+    user = result.scalar()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    await db.delete(user)
+    await db.commit()
+    return {"message": "User was permanent deleted successfully  "}
  
 
 @user_router.put('/update/{id}')
-async def update(id:int, user: UserSchema, db:AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
-    update_user = db.query(UserModel).filter(UserModel.id == id)
-    update_user = update_user.first()
-    if update_user == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user no finded with {id}")
-    else:
-        #update_user.update(user.model_dump(), synchronize_session=False)
-        update_user.fullname = user.fullname
-        update_user.lastname = user.lastname
-        update_user.username = user.username
-        
-        update_user.password = tools.auth.get_password_hash(user.password)
-        
-        db.commit()
-        db.refresh(update_user) 
-           
-    return update_user
+async def update(id:int, user_update: UserSchema, db:AsyncSession = Depends(get_db),current_user = Depends(tools.auth.get_current_active_user)):
+    result = await db.execute(select(UserModel).filter(UserModel.id == id))
+    user = result.scalars().first()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    for field, value in user_update.model_dump(exclude_unset=True).items():
+        setattr(user, field, value)
+    await db.commit()
+    return user
 

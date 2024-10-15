@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
+from sqlalchemy.future import select
 #from pydantic import BaseModel
 
 from schemes.TokenDataSchema import TokenDataSchema
@@ -29,14 +30,17 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-def get_user(username: str, db: AsyncSession = Depends(get_db)):
+async def get_user(username: str, db: AsyncSession = Depends(get_db)):
     #print('db: ',db)
     from models.UserModel import UserModel
-    user = db.query(UserModel).filter(UserModel.username == username)
-    return user.first()
+    #user = db.query(UserModel).filter(UserModel.username == username)
+    statement = select(UserModel).where(UserModel.username == username)
+    result = await db.execute(statement)
+    return result.scalar()
 
-def authenticate_user(username: str, password: str, db: AsyncSession = Depends(get_db)):
-    user = get_user(username,db)
+async def authenticate_user(username: str, password: str, db: AsyncSession = Depends(get_db)):
+    user = await get_user(username,db)
+    print('User get',user)
     if not user:
         return False
     if not verify_password(password, user.password):
@@ -54,7 +58,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],db: Session = Depends(get_db)):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],db: AsyncSession = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -73,7 +77,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],db: Ses
     
     username=token_data.username
     
-    user = get_user(username,db)
+    user = await get_user(username,db)
     if user is None:
         raise credentials_exception
 
